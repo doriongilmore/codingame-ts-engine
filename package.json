@@ -1,0 +1,11 @@
+{
+  "name": "codingameengine",
+  "version": "1.0.0",
+  "description": "A set of tools to work on codingame projects within vscode",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "doriongilmore",
+  "license": "MIT"
+}
