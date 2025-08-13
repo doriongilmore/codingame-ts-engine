@@ -1,8 +1,8 @@
 {
-  "name": "codingameengine",
+  "name": "@doriongilmore/codingame-ts-engine",
   "version": "1.0.0",
   "description": "A set of tools to work on codingame projects within vscode",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

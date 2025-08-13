@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a node module to easily work/play with javascript or typsecript on different CodinGame projects (classic puzzles or turn-based games)
+This is a node module to easily work/play with typsecript on different CodinGame projects (classic puzzles or turn-based games)
 
 ## Goal / Idea
 
