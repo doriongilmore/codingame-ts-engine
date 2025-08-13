@@ -13,7 +13,7 @@ We should be able to create a new project and npm install this project, which wo
 1 - framework for classic puzzles (input - compute - output) :
     a - "init" a run with inputs and expected outputs
     b - simulate "readline" codingame utility
-    c - simulate "console" codingame utilities
+    c - compare player output vs exoected output
 
 2 - build tool
 

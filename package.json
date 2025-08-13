@@ -1,11 +1,20 @@
 {
   "name": "@doriongilmore/codingame-ts-engine",
   "version": "1.0.0",
-  "description": "A set of tools to work on codingame projects within vscode",
+  "description": "A set of tools to work on codingame projects within any IDE",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "doriongilmore",
-  "license": "MIT"
+  "exports": {
+    ".": "./index.js",
+    "./types": "./src/types.ts"
+  },
+  "author": "doriongilmore<doriongilmore@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^22.12.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
 }
