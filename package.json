@@ -1,13 +1,13 @@
 {
   "name": "@doriongilmore/codingame-ts-engine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A set of tools to work on codingame projects within any IDE",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "exports": {
-    ".": "./index.js",
+    ".": "./index.ts",
     "./types": "./src/types.ts"
   },
   "author": "doriongilmore<doriongilmore@outlook.com>",
