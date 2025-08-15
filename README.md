@@ -25,15 +25,12 @@ Check the following for a complete implementation:
 
 ## Roadmap
 
-1 - framework for classic puzzles (input - compute - output) ✅
-    a - "init" a run with inputs and expected outputs ✅
-    b - simulate "readline" codingame utility ✅
-    c - compare player output vs expected output ✅
-
-2 - build tool ⏳
-
-3 - node module
-    a - export utilities from 1 & 2 ✅
-    b - create specific architecture during installation (see /template folder) ⏳
-
-4 - framework for more advanced games ⏳
+- framework for classic puzzles (input - compute - output) ✅
+    - "init" a run with inputs and expected outputs ✅
+    - simulate "readline" codingame utility ✅
+    - compare player output vs expected output ✅
+- build tool ⏳
+- node module
+    - export utilities from 1 & 2 ✅
+    - create specific architecture during installation (see /template folder) ⏳
+- framework for more advanced games ⏳
