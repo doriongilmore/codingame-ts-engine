@@ -1,9 +1,9 @@
 // import { PuzzleEngine, fromJsonFileToPuzzleData } from "@doriongilmore/codingame-ts-engine";
 import { resolve } from "path"
 import { readdirSync, statSync } from "fs";
-import PuzzleEngine from "./Engine";
-import { fromJsonFileToPuzzleData } from "../lib/fromJsonFileToPuzzleData";
-import { PuzzleScript } from "../types";
+import PuzzleEngine from "./Engine.js";
+import { fromJsonFileToPuzzleData } from "../lib/fromJsonFileToPuzzleData.js";
+import type { PuzzleScript } from "../types.js";
 
 function isJsonFile(filename:string): boolean {
     return filename.endsWith(".json");

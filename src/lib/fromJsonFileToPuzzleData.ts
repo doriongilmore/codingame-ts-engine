@@ -1,5 +1,5 @@
 import { readFileSync } from "fs"
-import { PuzzleExerciseData } from "../types";
+import { type PuzzleExerciseData } from "../types.js";
 
 const errorMessage = "Expect JSON object with 'inputs' && 'outputs' properties";
 
@@ -12,7 +12,7 @@ export function fromJsonFileToPuzzleData(path: string): PuzzleExerciseData {
         }
         throw new Error("Invalid Format: " + errorMessage);
     } catch (error) {
-        console.error(error.message);
+        console.error((error as Error).message);
         throw new Error("Error while parsing file. " + errorMessage);
     }
 }

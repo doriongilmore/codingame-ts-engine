@@ -1,4 +1,4 @@
-import { ReadlineFunction } from "../types";
+import { type ReadlineFunction } from "../types.js";
 
 export function getReadline(inputs: string[]): ReadlineFunction {
     let readlineCount = -1;

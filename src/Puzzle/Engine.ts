@@ -1,5 +1,5 @@
-import { getReadline } from "../lib/getReadline";
-import { PuzzleScript } from "../types";
+import { getReadline } from "../lib/getReadline.js";
+import type { PuzzleScript } from "../types.js";
 
 const DASHES = "------";
 const FAIL = "fail";

@@ -3,18 +3,20 @@
   "version": "1.0.1",
   "description": "A set of tools to work on codingame projects within any IDE",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\""
   },
   "exports": {
-    ".": "./index.ts",
+    ".": "./src/index.ts",
     "./types": "./src/types.ts"
   },
   "author": "doriongilmore<doriongilmore@outlook.com>",
   "license": "MIT",
   "dependencies": {
     "@types/node": "^22.12.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.4",
     "typescript": "^5.9.2"
   }
 }

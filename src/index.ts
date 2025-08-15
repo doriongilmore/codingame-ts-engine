@@ -1,12 +1,12 @@
-import { fromJsonFileToPuzzleData as _fromJsonFileToPuzzleData} from "./src/lib/fromJsonFileToPuzzleData";
-import _PuzzleEngine from "./src/Puzzle/Engine" ;
-import { run as _runPuzzle } from "./src/Puzzle/Runner" ;
+import { fromJsonFileToPuzzleData as _fromJsonFileToPuzzleData} from "./lib/fromJsonFileToPuzzleData.js";
+import _PuzzleEngine from "./Puzzle/Engine.js" ;
+import { run as _runPuzzle } from "./Puzzle/Runner.js" ;
 
-import {
+import type {
     ReadlineFunction as _ReadlineFunction,
     PuzzleScript as _PuzzleScript,
     PuzzleExerciseData as _PuzzleExerciseData,
-} from "./src/types";
+} from "./types.js";
 
 export type ReadlineFunction = _ReadlineFunction;
 export type PuzzleScript = _PuzzleScript;
