@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a node module to easily work/play with typsecript on different CodinGame projects (classic puzzles or bot battles)
+This is a node module to easily work/play with typescript on different CodinGame projects (classic puzzles or bot battles)
 
 ## Goal / Idea
 
@@ -16,7 +16,36 @@ We should be able to create a new project and npm install this one, which would 
 
 ## Installation
 
-`npm i @types/node@22 tsx@4 typescript@5 @doriongilmore/codingame-ts-engine`
+- execute the following:
+```bash
+npm i @types/node@22 tsx@4 typescript@5 @doriongilmore/codingame-ts-engine
+cp node_modules/@doriongilmore/codingame-ts-engine/template/* -r .
+```
+- add `"dev": "tsx src/index.ts"` to your package.json scripts
+
+After executing your new dev script, you should see the following in console:
+```
+~/workspace/new-cg-game$ npm run dev
+
+> new-cg-game@1.0.0 dev
+> tsx src/index.ts
+
+------ Game started ------
+answer
+answer
+answer
+answer
+answer
+Failure
+Found:     answer
+Expected:  ##########
+------ Game finished. Result : fail ------
+```
+
+If that's the case, you're ready to work on your puzzle! Start by looking into
+- `src/playerScript.js` (your player logic)
+- `src/index.ts` (mechanism to run one or several puzzles)
+- `exercises` you should update json files for your current puzzle
 
 ## Example
 
