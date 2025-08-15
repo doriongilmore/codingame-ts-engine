@@ -14,6 +14,10 @@ We should be able to create a new project and npm install this one, which would 
 - provide a few helpers (e.g. `readline()`)
 
 
+## Installation
+
+`npm i @types/node@22 tsx@4 typescript@5 @doriongilmore/codingame-ts-engine`
+
 ## Example
 
 Check the following for a complete implementation:
