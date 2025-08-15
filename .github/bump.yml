@@ -75,3 +75,5 @@ files:
     line: 3
   - file-path: 'package-lock.json'
     line: 3
+  - file-path: 'package-lock.json'
+    line: 9
