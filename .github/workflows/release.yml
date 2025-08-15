@@ -30,8 +30,12 @@ jobs:
           node-version: "22"
           registry-url: 'https://registry.npmjs.org'
       - run: npm install
-      - run: npm run build
       - run: npm run test
+      - run: |
+          npm run build
+          git add dist
+          git commit -m "chore: update dist folder"
+          git push
       - uses: MeilCli/bump-release-action@v2
         with:
           config_path: '.github/bump.yml'
@@ -39,3 +43,6 @@ jobs:
           dry_run: ${{ github.event.inputs.dry_run }}
           draft: ${{ github.event.inputs.draft }}
           pre_release: ${{ github.event.inputs.pre_release }}
+      - uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
