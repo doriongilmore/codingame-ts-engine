@@ -32,6 +32,7 @@ jobs:
       - uses: MeilCli/bump-release-action@v2
         with:
           config_path: '.github/bump.yml'
+          base-branch: 'main'
           bump: ${{ github.event.inputs.bump }}
           dry_run: ${{ github.event.inputs.dry_run }}
           draft: ${{ github.event.inputs.draft }}
