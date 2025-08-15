@@ -36,8 +36,7 @@ jobs:
           git config --global user.name 'Doriongilmore'
           git config --global user.email 'doriongilmore@users.noreply.github.com'
           git add dist
-          git commit -m "chore: update dist folder"
-          git push
+          git commit -m "chore: update dist folder" && git push || echo nothing to commit
       - uses: MeilCli/bump-release-action@v2
         with:
           config_path: '.github/bump.yml'
