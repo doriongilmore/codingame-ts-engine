@@ -4,6 +4,7 @@
   "description": "A set of tools to work on codingame projects within any IDE",
   "main": "index.ts",
   "type": "module",
+  "keywords": ["codingame", "engine", "typescript"],
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
