@@ -26,7 +26,9 @@ function main(readline: ReadlineFunction): string[] {
     const h: number = parseInt(inputs[1]);
     for (let i = 0; i < h; i++) {
         const ROW: string = readline();
+        console.error(ROW); // this helps you create txt files for your local environment, remove anytime
     }
+    console.error("$DORION$"); // this helps you create txt files for your local environment, remove anytime
     for (let i = 0; i < h; i++) {
 
         // Write an answer using console.log()

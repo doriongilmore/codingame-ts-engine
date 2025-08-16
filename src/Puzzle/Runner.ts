@@ -3,21 +3,37 @@ import { resolve } from "path"
 import { readdirSync, statSync } from "fs";
 import PuzzleEngine from "./Engine.js";
 import { fromJsonFileToPuzzleData } from "../lib/fromJsonFileToPuzzleData.js";
-import type { PuzzleScript } from "../types.js";
+import { fromTextFileToPuzzleData } from "../lib/fromTextFileToPuzzleData.js";
+import type { PuzzleExerciseData, PuzzleScript } from "../types.js";
 
 function isJsonFile(filename:string): boolean {
     return filename.endsWith(".json");
 }
+function isTextFile(filename:string): boolean {
+    return filename.endsWith(".txt");
+}
+function hasSupportedExtension(filename:string): boolean {
+    return isJsonFile(filename) || isTextFile(filename);
+}
+
+function readFile(path: string): PuzzleExerciseData {
+    if (isJsonFile(path)) {
+        return fromJsonFileToPuzzleData(path);
+    } else if (isTextFile(path)) {
+        return fromTextFileToPuzzleData(path);
+    }
+    throw new Error("wrong extension for file: " + path);
+}
 
 function runFile(script: PuzzleScript, path: string): boolean {
-    const data = fromJsonFileToPuzzleData(path);
+    const data = readFile(path);
     const game = new PuzzleEngine(data.inputs, data.outputs, script);
     return game.run();
 }
 
 function runDirectory(script: PuzzleScript, path: string) {
     const files = readdirSync(path)
-        .filter(isJsonFile)
+        .filter(hasSupportedExtension)
         .map((filename:string) => resolve(path, filename));
 
     let count = 0;
@@ -39,9 +55,9 @@ export function run(script: PuzzleScript, path: string = resolve("exercises")) {
 
     if (pathStats.isDirectory()) {
         runDirectory(script, path)
-    } else if (pathStats.isFile() && isJsonFile(path)) {
+    } else if (pathStats.isFile() && hasSupportedExtension(path)) {
         runFile(script, path);
     } else {
-        console.error("Only JSON files and directories containing such files are supported");
+        console.error("Only JSON or TXT files and directories containing such files are supported.");
     }
 }
