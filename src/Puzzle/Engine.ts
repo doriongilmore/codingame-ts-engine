@@ -8,14 +8,16 @@ const SUCCESS = "success";
 export default class PuzzleEngine {
     constructor(public playerInputs: string[], public expectedPlayerOutput: string[], public script: PuzzleScript) {}
 
-    run() {
+    run(): boolean {
         this.logStep("Game started");
 
-        const move = this.script.main(getReadline(this.playerInputs));
-        
+        const readline = getReadline(this.playerInputs);
+        const move = this.script.main(readline);
         const won:boolean = this.checkMove(move);
 
         this.logStep(`Game finished. Result : ${won ? SUCCESS : FAIL}`);
+
+        return won;
     }
 
     private checkMove(move: string[]): boolean {
@@ -35,7 +37,7 @@ export default class PuzzleEngine {
         // Failure
         // Found:       ###########EDCBA9876543210#
         // Expected:    #.........#EDCBA9876543210#
-        console.warn("Failure");
+        console.warn("\nFailure");
         console.warn(`${"Found:".padEnd(10, " ")} ${playerRow}`);
         console.warn(`${"Expected:".padEnd(10, " ")} ${expectedRow}`);
     }

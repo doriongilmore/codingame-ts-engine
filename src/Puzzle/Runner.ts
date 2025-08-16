@@ -9,24 +9,29 @@ function isJsonFile(filename:string): boolean {
     return filename.endsWith(".json");
 }
 
-function runFile(script: PuzzleScript, path: string) {
-    // console.debug("file detected", path);
+function runFile(script: PuzzleScript, path: string): boolean {
     const data = fromJsonFileToPuzzleData(path);
     const game = new PuzzleEngine(data.inputs, data.outputs, script);
-    game.run();
+    return game.run();
 }
 
 function runDirectory(script: PuzzleScript, path: string) {
-    // console.debug("directory detected", path);
     const files = readdirSync(path)
         .filter(isJsonFile)
         .map((filename:string) => resolve(path, filename));
-    // console.debug(files.length, "json files detected");
+
+    let count = 0;
 
     for (const filepath of files) {
-        runFile(script, filepath);
+        const success = runFile(script, filepath);;
+        if (success) {
+            count += 1;
+        }
         console.log("");
     }
+
+    const percentage:number = files.length ? Number(count / files.length * 100): 0;
+    console.log(`won ${count} games out of ${files.length} : ${percentage}%`);
 }
 
 export function run(script: PuzzleScript, path: string = resolve("exercises")) {
