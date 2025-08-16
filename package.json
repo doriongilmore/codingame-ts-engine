@@ -10,8 +10,9 @@
     "test": "echo \"Error: no test specified\""
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./puzzle/*": "./src/Puzzle/*.ts",
+    "./puzzle/*.js": "./src/Puzzle/*.ts"
   },
   "author": "doriongilmore<doriongilmore@outlook.com>",
   "license": "MIT",

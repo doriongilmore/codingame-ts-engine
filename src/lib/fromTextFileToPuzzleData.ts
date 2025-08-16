@@ -9,8 +9,6 @@ export function fromTextFileToPuzzleData(path: string): PuzzleExerciseData {
         const fileContent = readFileSync(path).toString("utf-8");
         const [inputs, outputs]: string[][] = fileContent.split(SEPARATOR).map((filePart) => filePart.split("\n"));
 
-        console.debug({ inputs, outputs });
-
         return { inputs, outputs };
     } catch (error) {
         console.error((error as Error).message);

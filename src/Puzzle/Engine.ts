@@ -5,14 +5,21 @@ const DASHES = "------";
 const FAIL = "fail";
 const SUCCESS = "success";
 
+export interface PuzzleEngineOptions {
+    playerInputs: string[],
+    expectedPlayerOutput: string[],
+    script: PuzzleScript,
+    hideEngineLogs?: boolean,
+}
+
 export default class PuzzleEngine {
-    constructor(public playerInputs: string[], public expectedPlayerOutput: string[], public script: PuzzleScript) {}
+    constructor(public options: PuzzleEngineOptions) {}
 
     run(): boolean {
         this.logStep("Game started");
 
-        const readline = getReadline(this.playerInputs);
-        const move = this.script.main(readline);
+        const readline = getReadline(this.options.playerInputs);
+        const move = this.options.script.main(readline);
         const won:boolean = this.checkMove(move);
 
         this.logStep(`Game finished. Result : ${won ? SUCCESS : FAIL}`);
@@ -21,8 +28,8 @@ export default class PuzzleEngine {
     }
 
     private checkMove(move: string[]): boolean {
-        for (let rowIndex = 0; rowIndex < this.expectedPlayerOutput.length; rowIndex++) {
-            const expectedRow = this.expectedPlayerOutput[rowIndex];
+        for (let rowIndex = 0; rowIndex < this.options.expectedPlayerOutput.length; rowIndex++) {
+            const expectedRow = this.options.expectedPlayerOutput[rowIndex];
             const playerRow = move[rowIndex];
             if (expectedRow !== playerRow) {
                 this.warnFailure(expectedRow, playerRow)
@@ -43,6 +50,8 @@ export default class PuzzleEngine {
     }
 
     private logStep(message: string): void {
-        console.log(`${DASHES} ${message} ${DASHES}`);
+        if (!this.options.hideEngineLogs) {
+            console.log(`${DASHES} ${message} ${DASHES}`);
+        }
     }
 }

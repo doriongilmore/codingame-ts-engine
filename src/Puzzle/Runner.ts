@@ -1,10 +1,16 @@
-// import { PuzzleEngine, fromJsonFileToPuzzleData } from "@doriongilmore/codingame-ts-engine";
 import { resolve } from "path"
 import { readdirSync, statSync } from "fs";
 import PuzzleEngine from "./Engine.js";
+import type { PuzzleEngineOptions } from "./Engine.js";
 import { fromJsonFileToPuzzleData } from "../lib/fromJsonFileToPuzzleData.js";
 import { fromTextFileToPuzzleData } from "../lib/fromTextFileToPuzzleData.js";
 import type { PuzzleExerciseData, PuzzleScript } from "../types.js";
+
+export interface RunOptions {
+    path: string,
+    script: PuzzleScript,
+    hideEngineLogs?: boolean,
+}
 
 function isJsonFile(filename:string): boolean {
     return filename.endsWith(".json");
@@ -25,38 +31,45 @@ function readFile(path: string): PuzzleExerciseData {
     throw new Error("wrong extension for file: " + path);
 }
 
-function runFile(script: PuzzleScript, path: string): boolean {
-    const data = readFile(path);
-    const game = new PuzzleEngine(data.inputs, data.outputs, script);
+function runFile(options: RunOptions): boolean {
+    const data = readFile(options.path);
+    const gameOptions: PuzzleEngineOptions = {
+        playerInputs: data.inputs,
+        expectedPlayerOutput: data.outputs,
+        script: options.script,
+        hideEngineLogs: options.hideEngineLogs,
+    };
+    const game = new PuzzleEngine(gameOptions);
     return game.run();
 }
 
-function runDirectory(script: PuzzleScript, path: string) {
-    const files = readdirSync(path)
+function runDirectory(options: RunOptions) {
+    const files = readdirSync(options.path)
         .filter(hasSupportedExtension)
-        .map((filename:string) => resolve(path, filename));
+        .map((filename:string) => resolve(options.path, filename));
 
     let count = 0;
 
     for (const filepath of files) {
-        const success = runFile(script, filepath);;
+        const fileRunOptions: RunOptions = {...options, path: filepath}
+        const success = runFile(fileRunOptions);
         if (success) {
             count += 1;
         }
-        console.log("");
+        !options.hideEngineLogs && console.log("");
     }
 
     const percentage:number = files.length ? Number(count / files.length * 100): 0;
     console.log(`won ${count} games out of ${files.length} : ${percentage}%`);
 }
 
-export function run(script: PuzzleScript, path: string = resolve("exercises")) {
-    const pathStats = statSync(path);
+export function run(options: RunOptions) {
+    const pathStats = statSync(options.path);
 
     if (pathStats.isDirectory()) {
-        runDirectory(script, path)
-    } else if (pathStats.isFile() && hasSupportedExtension(path)) {
-        runFile(script, path);
+        runDirectory(options)
+    } else if (pathStats.isFile() && hasSupportedExtension(options.path)) {
+        runFile(options);
     } else {
         console.error("Only JSON or TXT files and directories containing such files are supported.");
     }
