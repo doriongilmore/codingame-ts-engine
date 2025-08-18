@@ -1,10 +1,14 @@
 import type { PuzzleScript } from "../types.js";
-export default class PuzzleEngine {
+export interface PuzzleEngineOptions {
     playerInputs: string[];
     expectedPlayerOutput: string[];
     script: PuzzleScript;
-    constructor(playerInputs: string[], expectedPlayerOutput: string[], script: PuzzleScript);
-    run(): void;
+    hideEngineLogs?: boolean;
+}
+export default class PuzzleEngine {
+    options: PuzzleEngineOptions;
+    constructor(options: PuzzleEngineOptions);
+    run(): boolean;
     private checkMove;
     private warnFailure;
     private logStep;

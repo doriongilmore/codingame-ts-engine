@@ -1,3 +1,8 @@
 import type { PuzzleScript } from "../types.js";
-export declare function run(script: PuzzleScript, path?: string): void;
+export interface RunOptions {
+    path: string;
+    script: PuzzleScript;
+    hideEngineLogs?: boolean;
+}
+export declare function run(options: RunOptions): void;
 //# sourceMappingURL=Runner.d.ts.map

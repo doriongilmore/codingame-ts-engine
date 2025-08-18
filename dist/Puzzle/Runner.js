@@ -1,38 +1,63 @@
-// import { PuzzleEngine, fromJsonFileToPuzzleData } from "@doriongilmore/codingame-ts-engine";
 import { resolve } from "path";
 import { readdirSync, statSync } from "fs";
 import PuzzleEngine from "./Engine.js";
 import { fromJsonFileToPuzzleData } from "../lib/fromJsonFileToPuzzleData.js";
+import { fromTextFileToPuzzleData } from "../lib/fromTextFileToPuzzleData.js";
 function isJsonFile(filename) {
     return filename.endsWith(".json");
 }
-function runFile(script, path) {
-    // console.debug("file detected", path);
-    const data = fromJsonFileToPuzzleData(path);
-    const game = new PuzzleEngine(data.inputs, data.outputs, script);
-    game.run();
+function isTextFile(filename) {
+    return filename.endsWith(".txt");
 }
-function runDirectory(script, path) {
-    // console.debug("directory detected", path);
-    const files = readdirSync(path)
-        .filter(isJsonFile)
-        .map((filename) => resolve(path, filename));
-    // console.debug(files.length, "json files detected");
+function hasSupportedExtension(filename) {
+    return isJsonFile(filename) || isTextFile(filename);
+}
+function readFile(path) {
+    if (isJsonFile(path)) {
+        return fromJsonFileToPuzzleData(path);
+    }
+    else if (isTextFile(path)) {
+        return fromTextFileToPuzzleData(path);
+    }
+    throw new Error("wrong extension for file: " + path);
+}
+function runFile(options) {
+    const data = readFile(options.path);
+    const gameOptions = {
+        playerInputs: data.inputs,
+        expectedPlayerOutput: data.outputs,
+        script: options.script,
+        hideEngineLogs: options.hideEngineLogs,
+    };
+    const game = new PuzzleEngine(gameOptions);
+    return game.run();
+}
+function runDirectory(options) {
+    const files = readdirSync(options.path)
+        .filter(hasSupportedExtension)
+        .map((filename) => resolve(options.path, filename));
+    let count = 0;
     for (const filepath of files) {
-        runFile(script, filepath);
-        console.log("");
+        const fileRunOptions = { ...options, path: filepath };
+        const success = runFile(fileRunOptions);
+        if (success) {
+            count += 1;
+        }
+        !options.hideEngineLogs && console.log("");
     }
+    const percentage = files.length ? Number(count / files.length * 100) : 0;
+    console.log(`won ${count} games out of ${files.length} : ${percentage}%`);
 }
-export function run(script, path = resolve("exercises")) {
-    const pathStats = statSync(path);
+export function run(options) {
+    const pathStats = statSync(options.path);
     if (pathStats.isDirectory()) {
-        runDirectory(script, path);
+        runDirectory(options);
     }
-    else if (pathStats.isFile() && isJsonFile(path)) {
-        runFile(script, path);
+    else if (pathStats.isFile() && hasSupportedExtension(options.path)) {
+        runFile(options);
     }
     else {
-        console.error("Only JSON files and directories containing such files are supported");
+        console.error("Only JSON or TXT files and directories containing such files are supported.");
     }
 }
 //# sourceMappingURL=Runner.js.map
