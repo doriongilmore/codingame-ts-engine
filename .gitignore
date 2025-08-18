@@ -1,4 +1,4 @@
 node_modules
 .vscode
-template/package.json
-template/package-lock.json
+template/**/package.json
+template/**/package-lock.json
