@@ -49,7 +49,7 @@ Expected:  ##########
 If that's the case, you're ready to work on your puzzle! Start by looking into
 - `src/playerScript.js` (your player logic)
 - `src/index.ts` (mechanism to run one or several puzzles)
-- `exercises` you should update json files for your current puzzle
+- `exercises` you should update files for your current puzzle
 
 ## Example
 
@@ -63,7 +63,9 @@ Check the following for a complete implementation:
     - simulate "readline" codingame utility ✅
     - compare player output vs expected output ✅
 - build tool ⏳
-- node module
+    - basic usage (remove engine parts & uncomment `main(readline)` call) ✅
+    - add support for custom imports ⏳
+- node module ✅
     - export utilities from 1 & 2 ✅
-    - create specific architecture during installation (see /template folder) ⏳
+    - create specific architecture during installation (see /template folder) ✅
 - framework for more advanced games ⏳
