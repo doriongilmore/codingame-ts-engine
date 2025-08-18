@@ -9,6 +9,9 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
   },
+  "bin": {
+    "buildForCodingame.ts": "bin/buildForCodingame.ts"
+  },
   "exports": {
     "./types": "./src/types.ts",
     "./puzzle/*": "./src/Puzzle/*.ts",
@@ -18,6 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^22.12.0",
+    "process.argv": "^1.0.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
   }
