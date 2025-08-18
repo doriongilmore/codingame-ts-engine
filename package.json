@@ -5,7 +5,9 @@
   "type": "module",
   "keywords": ["codingame", "engine", "typescript"],
   "scripts": {
-    "dev": "npm --prefix ./template install && npm --prefix ./template run dev",
+    "pre_dev": "cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install",
+    "_dev": "npm --prefix ${CG_PATH} run dev",
+    "puzzle": "CG_PATH=./template/puzzle npm run _dev",
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
   },
