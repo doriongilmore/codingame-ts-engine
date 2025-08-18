@@ -19,9 +19,13 @@ We should be able to create a new project and npm install this one, which would 
 - execute the following:
 ```bash
 npm i @types/node@22 tsx@4 typescript@5 @doriongilmore/codingame-ts-engine
-cp node_modules/@doriongilmore/codingame-ts-engine/template/* -r .
+cp node_modules/@doriongilmore/codingame-ts-engine/template/puzzle/* -r .
 ```
-- add `"dev": "tsx src/index.ts"` to your package.json scripts
+- add the following scripts to your package.json
+```json
+"dev": "tsx src/index.ts",
+"build": "npx tsx node_modules/.bin/buildForCodingame.ts"
+```
 
 After executing your new dev script, you should see the following in console:
 ```
