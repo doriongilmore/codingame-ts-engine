@@ -63,9 +63,9 @@ Check the following for a complete implementation:
     - "init" a run with inputs and expected outputs ✅
     - simulate "readline" codingame utility ✅
     - compare player output vs expected output ✅
-- build tool ⏳
+- build tool ✅
     - basic usage (remove engine parts & uncomment `main(readline)` call) ✅
-    - add support for custom imports ⏳
+    - add support for custom imports ✅
 - node module ✅
     - export utilities from 1 & 2 ✅
     - create specific architecture during installation (see /template folder) ✅
