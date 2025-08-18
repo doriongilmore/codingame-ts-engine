@@ -12,6 +12,7 @@ import { PuzzleScript } from "@doriongilmore/codingame-ts-engine/types";
 
 const API: PuzzleScript = { main };
 export default API;
+// everything until this line must be removed in CodinGame
 
 type ReadlineFunction = () => string
 

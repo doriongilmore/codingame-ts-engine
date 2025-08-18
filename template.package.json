@@ -1,0 +1,14 @@
+{
+  "name": "@doriongilmore/codingame-ts-engine-template",
+  "version": "1.0.0",
+  "description": "minimalist working package.json for testing the template (to be renamed & moved to template folder)",
+  "main": "src/index.ts",
+  "author": "doriongilmore",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@doriongilmore/codingame-ts-engine": "file:.."
+  }
+}

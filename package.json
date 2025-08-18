@@ -2,10 +2,10 @@
   "name": "@doriongilmore/codingame-ts-engine",
   "version": "1.0.4",
   "description": "A set of tools to work on codingame projects within any IDE",
-  "main": "index.ts",
   "type": "module",
   "keywords": ["codingame", "engine", "typescript"],
   "scripts": {
+    "dev": "npm --prefix ./template install && npm --prefix ./template run dev",
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
   },
