@@ -1,4 +1,4 @@
-import { resolve, relative } from "path"
+import { resolve } from "path"
 import { run, type RunOptions } from "@doriongilmore/codingame-ts-engine/puzzle/Runner";
 import script from "./playerScript.js";
 

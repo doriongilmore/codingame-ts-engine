@@ -1,3 +1,5 @@
+// file:/home/dorion/workspace/codingameEngine/template/puzzle/src/playerScript.ts
+
 
 type ReadlineFunction = () => string
 
@@ -6,7 +8,7 @@ function main(readline: ReadlineFunction): string[] {
      * Auto-generated code below aims at helping you parse
      * the standard input according to the problem statement.
      **/
-    const answer = []
+    const answer: string[] = []
     var inputs: string[] = readline().split(' ');
     const w: number = parseInt(inputs[0]);
     const h: number = parseInt(inputs[1]);

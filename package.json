@@ -5,9 +5,11 @@
   "type": "module",
   "keywords": ["codingame", "engine", "typescript"],
   "scripts": {
-    "pre_dev": "cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install",
-    "_dev": "npm --prefix ${CG_PATH} run dev",
-    "puzzle": "CG_PATH=./template/puzzle npm run _dev",
+    "_dev": "CG_PATH=${CG_PATH:-./template/puzzle} && cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install && npm --prefix ${CG_PATH} run dev",
+    "_build": "CG_PATH=${CG_PATH:-./template/puzzle} && tsx bin/buildForCodingame.ts --script=${CG_PATH}/src/playerScript.ts --out=${CG_PATH}/codingame",
+    "dev:puzzle": "npm run _dev",
+    "build:puzzle": "npm run _build",
+    "build:puzzle:multi": "tsx bin/buildForCodingame.ts --script=template/puzzle/src/playerScript.multifile.ts --out=template/puzzle/codingame",
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
   },
