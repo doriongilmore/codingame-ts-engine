@@ -1,6 +1,6 @@
 {
   "name": "@doriongilmore/codingame-ts-engine",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "A set of tools to work on codingame projects within any IDE",
   "type": "module",
   "keywords": ["codingame", "engine", "typescript"],
