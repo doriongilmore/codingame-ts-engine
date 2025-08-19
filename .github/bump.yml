@@ -32,13 +32,8 @@ categories:
       - 'Feature'
     commits:
       - 'feature:'
+      - 'feat:'
     changes-prefix: ':gift: '
-  - title: 'Changes'
-    labels:
-      - Maintenance
-    commits:
-      - 'change:'
-    changes-prefix: ':hammer: '
   - title: 'Bug Fixes'
     labels:
       - 'Bug'
@@ -50,13 +45,16 @@ categories:
       - 'Documentation'
     commits:
       - 'document:'
+      - 'docs:'
     changes-prefix: ':blue_book: '
-  - title: 'Dependency Updates'
+  - title: 'Maintenance'
     labels:
-      - 'Dependencies'
+      - 'Maintenance'
     skip-label: 'Development'
     commits:
       - 'dependency:'
+      - 'chore:'
+      - 'ci:'
     changes-prefix: ':green_book: '
 bump:
   default: 'patch'
@@ -70,6 +68,7 @@ bump:
       - 'Feature'
     commits:
       - 'feature:'
+      - 'feat:'
 files:
   - file-path: 'package.json'
     line: 3
