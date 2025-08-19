@@ -9,7 +9,8 @@
     "_build": "CG_PATH=${CG_PATH:-./template/puzzle} && tsx bin/buildForCodingame.ts --script=${CG_PATH}/src/playerScript.ts --out=${CG_PATH}/codingame",
     "dev:puzzle": "npm run _dev",
     "build:puzzle": "npm run _build",
-    "build:puzzle:multi": "tsx bin/buildForCodingame.ts --script=template/puzzle/src/playerScript.multifile.ts --out=template/puzzle/codingame",
+    "dev:puzzle:multi": "CG_PATH=./template/puzzle.multifile npm run _dev",
+    "build:puzzle:multi": "CG_PATH=./template/puzzle.multifile npm run _build",
     "build": "tsc",
     "test": "echo \"Error: no test specified\""
   },

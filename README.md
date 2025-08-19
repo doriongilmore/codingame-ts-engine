@@ -16,12 +16,14 @@ We should be able to create a new project and npm install this one, which would 
 
 ## Installation
 
-- execute the following:
+- Install the dependencies:
 ```bash
 npm i @types/node@22 tsx@4 typescript@5 @doriongilmore/codingame-ts-engine
-cp node_modules/@doriongilmore/codingame-ts-engine/template/puzzle/* -r .
 ```
-- add the following scripts to your package.json
+- Copy one of the templates:
+    - `cp node_modules/@doriongilmore/codingame-ts-engine/template/puzzle/* -r .`
+    - `cp node_modules/@doriongilmore/codingame-ts-engine/template/puzzle.multifile/* -r .`
+- Then add the following scripts to your package.json:
 ```json
 "dev": "tsx src/index.ts",
 "build": "npx tsx node_modules/.bin/buildForCodingame.ts"
