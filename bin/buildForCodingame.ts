@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync,  } from 'fs';
 import { resolve, sep } from 'path';
 import argv from "process.argv";
 
-interface Config {
+interface BuildScriptApi {
     script: string;
     out: string;
 }
@@ -27,24 +27,31 @@ const toBeRemoved = "/**\n"+
 " **/\n";
 const alreadyImported: Set<string> = new Set<string>();
 
-function parseArgs(): Config {
+function parseArgs(): BuildScriptApi {
     const processArgv = argv(process.argv.slice(2));
-    return processArgv<Config>({
+    return processArgv<BuildScriptApi>({
         script: resolve("src", defaultFilename),
         out: resolve("codingame"),
     });
 }
 
+function isImportLine(line: string): boolean {
+  return line.startsWith("import"); 
+}
+function isExportLine(line: string): boolean {
+  return line.startsWith("export"); 
+}
+
 function isRelevantImportLine(line: string): boolean {
-  return line.startsWith("import") && !line.includes("@doriongilmore/codingame-ts-engine")
+  return isImportLine(line) && !line.includes("@doriongilmore/codingame-ts-engine")
 }
 
 function isRelevantScriptLine(line: string): boolean {
-  return !line.startsWith("import") && !knownEngineLines.includes(line);
+  return !isImportLine(line) && !knownEngineLines.includes(line);
 }
 
-function parseScriptLine(line: string): string {
-  return line.startsWith("export") ? line.replace(/export (default )?/i, "") : line
+function cleanScriptLine(line: string): string {
+  return isExportLine(line) ? line.replace(/export (default )?/i, "") : line
 }
 
 function getImportFilepaths(importLines: string[]): string[] {
@@ -53,48 +60,55 @@ function getImportFilepaths(importLines: string[]): string[] {
 
   for (const line of importLines) {
     const exec = regex.exec(line);
-    if (exec) {
-      const [_imports, path] = exec.slice(1);
-      if (path?.startsWith("./")) {
-        filepaths.push(path);
-      } else {
-        console.warn("only relative paths are supported, error with import", path);
-      }
-    } else {
+    if (!exec) {
       console.warn("import wrongly detected", line);
+      continue;
     }
+    const [_imports, path] = exec.slice(1);
+    if (!path?.startsWith("./")) {
+      console.warn("only relative paths are supported, error with import", path);
+      continue;
+    }
+    filepaths.push(path);
   }
 
   return filepaths;
 }
 
-function parseFile(config: Config, filepath: string): string {
-  const completeContent: string[] = [];
-
+function parseFileRecursively(config: BuildScriptApi, filepath: string): string {
   const filename = filepath.endsWith(".ts") ? filepath : `${filepath}.ts`;
   const completeFilepath = resolve(config.script, "..", filename);
   const fileContent = readFileSync(completeFilepath, "utf-8").split("\n");
-  const importLines = getImportFilepaths(fileContent.filter(isRelevantImportLine));
-  const otherLines = fileContent.filter(isRelevantScriptLine).map(parseScriptLine);
-
-  for (const importFilepath of importLines) {
+  const importLines = fileContent.filter(isRelevantImportLine);
+  const scriptLines = fileContent.filter(isRelevantScriptLine).map(cleanScriptLine);
+  
+  const completeContent: string[] = [];
+  const importedFiles = getImportFilepaths(importLines);
+  for (const importFilepath of importedFiles) {
     if (!alreadyImported.has(importFilepath)) {
       alreadyImported.add(importFilepath);
-      completeContent.push(parseFile(config, importFilepath));
+      completeContent.push(parseFileRecursively(config, importFilepath));
     }
   }
 
   completeContent.push(`// file:${completeFilepath}`);
-  completeContent.push(otherLines.join("\n"));
+  completeContent.push(scriptLines.join("\n"));
 
   return completeContent.join("\n");
 }
 
-function processFile(config: Config) {
+function cleanFinalContent(fileContent: string): string {
+  return fileContent
+    .replace("// main(readline);", "main(readline);")
+    .replace(toBeRemoved, "")
+    .replaceAll(/\n{3,}/g, "\n\n"); // two linebreaks make one blank line, more is useless
+}
+
+function processFile(config: BuildScriptApi) {
   const filepath = resolve(config.script);
 
   console.log("reading", filepath)
-  const modifiedContent = parseFile(config, filepath).replace("// main(readline);", "main(readline);").replace(toBeRemoved, "");
+  const modifiedContent = cleanFinalContent(parseFileRecursively(config, filepath));
   
   const filename = config.script.split(sep).pop() || defaultFilename;
   const outputFile = resolve(config.out, filename)

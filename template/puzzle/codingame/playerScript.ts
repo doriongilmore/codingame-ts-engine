@@ -1,7 +1,5 @@
 // file:/home/dorion/workspace/codingameEngine/template/puzzle/src/playerScript.ts
 
-
-
 type ReadlineFunction = () => string
 
 function main(readline: ReadlineFunction): string[] {
