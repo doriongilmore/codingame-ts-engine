@@ -31,7 +31,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install
       - run: npm run test
-      - run: |
+      - name: Update dist folder
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
           npm run build
           git config --global user.name 'Doriongilmore'
           git config --global user.email 'doriongilmore@users.noreply.github.com'
@@ -45,5 +47,6 @@ jobs:
           draft: ${{ github.event.inputs.draft }}
           pre_release: ${{ github.event.inputs.pre_release }}
       - uses: JS-DevTools/npm-publish@v3
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
