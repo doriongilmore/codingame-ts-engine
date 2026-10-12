@@ -5,14 +5,17 @@
   "type": "module",
   "keywords": ["codingame", "engine", "typescript"],
   "scripts": {
-    "_dev": "CG_PATH=${CG_PATH:-./template/puzzle} && cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install && npm --prefix ${CG_PATH} run dev",
+    "_dev": "CG_PATH=${CG_PATH:-./template/puzzle} && cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install --install-links=false && npm --prefix ${CG_PATH} run dev",
     "_build": "CG_PATH=${CG_PATH:-./template/puzzle} && tsx bin/buildForCodingame.ts --script=${CG_PATH}/src/playerScript.ts --out=${CG_PATH}/codingame",
     "dev:puzzle": "npm run _dev",
     "build:puzzle": "npm run _build",
     "dev:puzzle:multi": "CG_PATH=./template/puzzle.multifile npm run _dev",
     "build:puzzle:multi": "CG_PATH=./template/puzzle.multifile npm run _build",
+    "dev:bot": "CG_PATH=./template/bot npm run _dev",
+    "build:bot": "CG_PATH=./template/bot npm run _build",
+    "evaluate:bot": "CG_PATH=${CG_PATH:-./template/bot} && cp ./template.package.json ${CG_PATH}/package.json && npm --prefix ${CG_PATH} install --install-links=false && npm --prefix ${CG_PATH} run evaluate",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\""
+    "test": "node --import tsx --test \"test/**/*.test.ts\""
   },
   "bin": {
     "buildForCodingame.ts": "bin/buildForCodingame.ts"
@@ -20,7 +23,9 @@
   "exports": {
     "./types": "./src/types.ts",
     "./puzzle/*": "./src/Puzzle/*.ts",
-    "./puzzle/*.js": "./src/Puzzle/*.ts"
+    "./puzzle/*.js": "./src/Puzzle/*.ts",
+    "./bot/*": "./src/Bot/*.ts",
+    "./bot/*.js": "./src/Bot/*.ts"
   },
   "author": "doriongilmore<doriongilmore@outlook.com>",
   "license": "MIT",

@@ -12,6 +12,7 @@ const defaultFilename = 'playerScript.ts';
 
 const knownEngineLines = [
   "const API: PuzzleScript = { main };",
+  "const API: BotScript = { main };",
   "export default API;",
   "// everything until this line must be removed in CodinGame",
 ];
