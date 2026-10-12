@@ -7,18 +7,26 @@
 import { readSync } from "fs";
 import { resolve } from "path";
 import { pathToFileURL } from "url";
-import { READY_MARKER } from "./protocol.js";
+import { IDLE_PREFIX, IDLE_SUFFIX, READY_MARKER } from "./protocol.js";
 
 const chunk = Buffer.alloc(64 * 1024);
 let buffer = "";
+let consumed = 0;
 
 function readline(): string {
+    let announced = false;
     for (;;) {
         const index = buffer.indexOf("\n");
         if (index >= 0) {
             const line = buffer.slice(0, index).replace(/\r$/, "");
             buffer = buffer.slice(index + 1);
+            consumed++;
             return line;
+        }
+        if (!announced) {
+            // about to block: tells the engine the script has read everything it was given
+            console.log(`${IDLE_PREFIX}${consumed}${IDLE_SUFFIX}`);
+            announced = true;
         }
         let count = 0;
         try {

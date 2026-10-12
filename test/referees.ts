@@ -1,10 +1,18 @@
 import { InvalidMove } from "../src/Bot/InvalidMove.js";
-import type { PlayerOutputs, Referee, Winner } from "../src/types.js";
+import type { Plays, Referee, Winner } from "../src/types.js";
+
+/** Parse "<integer>" and nothing else, like a CodinGame referee would */
+function parseInteger(lines: string[]): number {
+    if (!/^\d+$/.test(lines[0])) {
+        throw new InvalidMove(`expected an integer but got "${lines[0]}"`);
+    }
+    return Number(lines[0]);
+}
 
 /** Sequential: players alternately add 1 to 3 to a sum, who reaches 10 first wins */
 export interface CountState { sum: number, current: number, winner: Winner }
 
-export const countReferee: Referee<CountState> = {
+export const countReferee: Referee<CountState, number> = {
     maxTurns: 20,
     init: () => ({ sum: 0, current: 0, winner: null }),
     getInitInputs: () => [],
@@ -14,13 +22,18 @@ export const countReferee: Referee<CountState> = {
         return alive[state.current] ? [state.current] : [1 - state.current];
     },
     expectedOutputLines: () => 1,
-    update(state, outputs: PlayerOutputs) {
-        const player = state.current;
-        const value = Number(outputs[player]?.[0]);
-        if (![1, 2, 3].includes(value)) {
-            throw new InvalidMove(player, `expected 1, 2 or 3 but got "${outputs[player]?.[0]}"`);
+    parsePlay: (_state, _player, lines) => parseInteger(lines),
+    validatePlay(_state, _player, play) {
+        if (![1, 2, 3].includes(play)) {
+            throw new InvalidMove(`expected 1, 2 or 3 but got ${play}`);
         }
-        const sum = state.sum + value;
+    },
+    update(state, plays: Plays<number>) {
+        const player = state.current;
+        if (plays[player] === undefined) {
+            return { ...state, current: 1 - player }; // eliminated player: nothing to apply
+        }
+        const sum = state.sum + plays[player];
         return { sum, current: 1 - player, winner: sum >= 10 ? player : null };
     },
     winner: (state) => state.winner,
@@ -29,20 +42,22 @@ export const countReferee: Referee<CountState> = {
 /** Simultaneous: everybody writes a number each turn, highest total after 3 turns wins */
 export interface ScoreState { turn: number, scores: number[] }
 
-export const scoreReferee: Referee<ScoreState> = {
+export const scoreReferee: Referee<ScoreState, number> = {
     maxTurns: 3,
     init: (playerCount) => ({ turn: 0, scores: Array(playerCount).fill(0) }),
     getInitInputs: () => [],
     getTurnInputs: (state) => [String(state.turn)],
     activePlayers: (state, alive) => alive.map((_, index) => index).filter((index) => alive[index]),
     expectedOutputLines: () => 1,
-    update(state, outputs) {
+    parsePlay: (_state, _player, lines) => parseInteger(lines),
+    validatePlay(_state, _player, play) {
+        if (play > 5) {
+            throw new InvalidMove(`expected an integer from 0 to 5 but got ${play}`);
+        }
+    },
+    update(state, plays) {
         const scores = [...state.scores];
-        for (const [player, lines] of Object.entries(outputs)) {
-            const value = Number(lines[0]);
-            if (!Number.isInteger(value) || value < 0 || value > 5) {
-                throw new InvalidMove(Number(player), `expected an integer from 0 to 5`);
-            }
+        for (const [player, value] of Object.entries(plays)) {
             scores[Number(player)] += value;
         }
         return { turn: state.turn + 1, scores };

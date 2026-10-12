@@ -1,6 +1,8 @@
+import type { EliminationKind } from "../types.js";
+
 /** Something went wrong with a player: it will be eliminated by the engine */
 export class PlayerFailure extends Error {
-    constructor(public kind: "timeout" | "crash" | "start", message: string) {
+    constructor(public kind: Exclude<EliminationKind, "invalid">, message: string) {
         super(message);
         this.name = "PlayerFailure";
     }
@@ -12,7 +14,10 @@ export interface BotPlayer {
     /** resolves when the player is ready to receive inputs */
     start(): Promise<void>;
     send(lines: string[]): void;
-    /** resolves with exactly `count` lines, rejects with a PlayerFailure */
+    /**
+     * Resolves with exactly `count` lines: what the player wrote for this turn.
+     * Rejects with a PlayerFailure when it is too slow, crashes, or writes more or less lines.
+     */
     read(count: number, timeoutMs: number): Promise<string[]>;
     stop(): Promise<void>;
 }

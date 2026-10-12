@@ -70,7 +70,14 @@ Add these scripts to your package.json:
 ```
 
 Each bot runs in its own node process: it reads with the global synchronous `readline()` and answers with `console.log`, exactly as on CodinGame. What it writes with `console.error` is displayed with its player name.
-A bot is eliminated (and the other player wins) when it answers too slowly (`turnTimeoutMs`, `firstTurnTimeoutMs`), crashes, or when your referee throws an `InvalidMove`.
+Like on CodinGame, a bot which does not respect the rules loses (the other player wins). This happens when it:
+- answers too slowly (`turnTimeoutMs`, `firstTurnTimeoutMs`) or crashes,
+- writes more or fewer lines than your referee expects (`expectedOutputLines`),
+- writes something malformed: `parsePlay` throws an `InvalidMove`,
+- plays something against the rules: `validatePlay` throws an `InvalidMove`.
+
+The reason is printed, available in the result (`eliminated: [{ player, kind, reason }]`) and, with `evaluate`, in `errors`.
+Your referee only has to describe the rules: `update` is called with valid plays only.
 
 ## Example
 

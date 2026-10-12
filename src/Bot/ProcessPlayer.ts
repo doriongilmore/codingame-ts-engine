@@ -4,7 +4,7 @@ import { basename } from "path";
 import { createRequire } from "module";
 import { fileURLToPath, pathToFileURL } from "url";
 import { PlayerFailure, type BotPlayer } from "./Player.js";
-import { READY_MARKER } from "./protocol.js";
+import { IDLE_PREFIX, IDLE_SUFFIX, READY_MARKER } from "./protocol.js";
 
 const STARTUP_TIMEOUT_MS = 10_000;
 const MAX_TIMER_MS = 2 ** 31 - 1;
@@ -28,6 +28,9 @@ export class ProcessPlayer implements BotPlayer {
     private stdoutRest = "";
     private stderrRest = "";
     private ready = false;
+    /** lines sent to the script so far, and lines it said it had consumed the last time it was idle */
+    private sent = 0;
+    private consumed = -1;
     private exit?: string;
     private wakeUps: Array<() => void> = [];
 
@@ -67,17 +70,38 @@ export class ProcessPlayer implements BotPlayer {
     }
 
     send(lines: string[]): void {
-        if (lines.length && !this.exit) {
-            this.child?.stdin!.write(lines.join("\n") + "\n");
+        const flat = lines.flatMap((line) => line.split("\n"));
+        if (flat.length && !this.exit) {
+            this.sent += flat.length;
+            this.child?.stdin!.write(flat.join("\n") + "\n");
         }
     }
 
+    /**
+     * The script answered when it has consumed every line we sent and waits for more (idle marker).
+     * Everything it wrote until then is its answer: the number of lines must be exactly `count`.
+     */
     async read(count: number, timeoutMs: number): Promise<string[]> {
         if (count <= 0) {
             return [];
         }
-        await this.waitUntil(() => this.lines.length >= count, timeoutMs);
-        return this.lines.splice(0, count);
+        try {
+            await this.waitUntil(() => this.consumed === this.sent, timeoutMs);
+        } catch (error) {
+            // a script which does not read all its inputs never gets idle: what it wrote is judged as is
+            if (!(error instanceof PlayerFailure) || this.lines.length < count) {
+                throw error;
+            }
+        }
+        const lines = this.lines.splice(0, this.lines.length);
+        if (lines.length !== count) {
+            const kind = lines.length > count ? "extra" : "missing";
+            throw new PlayerFailure(
+                "output",
+                `expected ${count} output line(s) but got ${lines.length} (${kind}): ${JSON.stringify(lines)}`,
+            );
+        }
+        return lines;
     }
 
     async stop(): Promise<void> {
@@ -98,6 +122,8 @@ export class ProcessPlayer implements BotPlayer {
             this.stdoutRest = this.stdoutRest.slice(index + 1);
             if (line === READY_MARKER) {
                 this.ready = true;
+            } else if (line.startsWith(IDLE_PREFIX) && line.endsWith(IDLE_SUFFIX)) {
+                this.consumed = Number(line.slice(IDLE_PREFIX.length, -IDLE_SUFFIX.length));
             } else {
                 this.lines.push(line);
             }

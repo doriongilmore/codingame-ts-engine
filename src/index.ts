@@ -20,7 +20,7 @@ export const fromJsonFileToPuzzleData = _fromJsonFileToPuzzleData;
 
 export const runPuzzle = _runPuzzle;
 
-export type { Referee, GameResult, PlayerOutputs, Winner } from "./types.js";
+export type { Referee, GameResult, Plays, Winner, EliminationKind } from "./types.js";
 export { default as BotEngine } from "./Bot/Engine.js";
 export type { BotEngineOptions } from "./Bot/Engine.js";
 export { InvalidMove } from "./Bot/InvalidMove.js";

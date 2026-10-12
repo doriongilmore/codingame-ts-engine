@@ -1,8 +1,8 @@
 import { resolve } from "path"
 import { run, type RunOptions } from "@doriongilmore/codingame-ts-engine/bot/Runner";
-import { referee, type State } from "../game/Referee.js";
+import { referee, type Play, type State } from "../game/Referee.js";
 
-const options: RunOptions<State> = {
+const options: RunOptions<State, Play> = {
     referee,
     players: [
         resolve("src", "playerScript.ts"),

@@ -1,21 +1,30 @@
 import { InvalidMove } from "@doriongilmore/codingame-ts-engine/bot/InvalidMove";
-import type { PlayerOutputs, Referee, Winner } from "@doriongilmore/codingame-ts-engine/types";
+import type { Plays, Referee, Winner } from "@doriongilmore/codingame-ts-engine/types";
 
 /**
  * Rules of the game (here a Tic Tac Toe), the equivalent of a CodinGame referee.
  * Replace this file with the rules of your own game.
  * Player 0 plays first. A cell holds the index of the player who played it, or null.
+ *
+ * Like on CodinGame, a player who breaks the rules loses. The engine already checks the number of
+ * output lines, `parsePlay` rejects malformed lines and `validatePlay` rejects forbidden plays.
  */
 const WIDTH = 3;
 
 type Cell = number | null;
+
+/** what a player can do: one cell */
+export interface Play {
+    row: number;
+    col: number;
+}
 
 export interface State {
     board: Cell[][];
     /** index of the player who must play */
     current: number;
     /** what the opponent just played, sent to the next player */
-    lastMove: { row: number; col: number } | null;
+    lastMove: Play | null;
     winner: Winner;
 }
 
@@ -23,7 +32,7 @@ function cloneBoard(board: Cell[][]): Cell[][] {
     return board.map((row) => row.slice());
 }
 
-function getFreeCells(board: Cell[][]): { row: number; col: number }[] {
+function getFreeCells(board: Cell[][]): Play[] {
     const cells = [];
     for (let row = 0; row < WIDTH; row++) {
         for (let col = 0; col < WIDTH; col++) {
@@ -46,7 +55,7 @@ function hasAlignment(board: Cell[][], player: number): boolean {
     return lines.some((line) => line.every(([row, col]) => board[row][col] === player));
 }
 
-export const referee: Referee<State> = {
+export const referee: Referee<State, Play> = {
     maxTurns: WIDTH * WIDTH,
 
     init(): State {
@@ -77,28 +86,41 @@ export const referee: Referee<State> = {
         return 1;
     },
 
-    update(state: State, outputs: PlayerOutputs): State {
-        const player = state.current;
-        const answer = outputs[player]?.[0] ?? "";
-        const match = /^(\d+) (\d+)$/.exec(answer.trim());
+    /** syntax: exactly "<row> <col>" with two integers */
+    parsePlay(_state: State, _player: number, lines: string[]): Play {
+        const match = /^(\d+) (\d+)$/.exec(lines[0]);
         if (!match) {
-            throw new InvalidMove(player, `expected "row col" but got "${answer}"`);
+            throw new InvalidMove(`expected "row col" but got "${lines[0]}"`);
         }
-        const row = Number(match[1]);
-        const col = Number(match[2]);
-        if (row >= WIDTH || col >= WIDTH || state.board[row][col] !== null) {
-            throw new InvalidMove(player, `cell ${row} ${col} is not free`);
+        return { row: Number(match[1]), col: Number(match[2]) };
+    },
+
+    /** rules: the cell exists and is free */
+    validatePlay(state: State, _player: number, play: Play): void {
+        if (play.row >= WIDTH || play.col >= WIDTH) {
+            throw new InvalidMove(`cell ${play.row} ${play.col} is outside of the board`);
+        }
+        if (state.board[play.row][play.col] !== null) {
+            throw new InvalidMove(`cell ${play.row} ${play.col} is already taken`);
+        }
+    },
+
+    update(state: State, plays: Plays<Play>): State {
+        const player = state.current;
+        const play = plays[player];
+        if (!play) {
+            return state; // the player was eliminated, nothing to apply
         }
 
         const board = cloneBoard(state.board);
-        board[row][col] = player;
+        board[play.row][play.col] = player;
         let winner: Winner = null;
         if (hasAlignment(board, player)) {
             winner = player;
         } else if (!getFreeCells(board).length) {
             winner = "draw";
         }
-        return { board, current: 1 - player, lastMove: { row, col }, winner };
+        return { board, current: 1 - player, lastMove: play, winner };
     },
 
     winner(state: State): Winner {

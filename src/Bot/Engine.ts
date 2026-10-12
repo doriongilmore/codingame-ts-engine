@@ -1,14 +1,15 @@
 import { InvalidMove } from "./InvalidMove.js";
 import type { BotPlayer } from "./Player.js";
-import type { GameResult, PlayerOutputs, Referee, Winner } from "../types.js";
+import { PlayerFailure } from "./Player.js";
+import type { EliminationKind, GameResult, Plays, Referee, Winner } from "../types.js";
 
 const DASHES = "------";
 /** CodinGame gives 1s to the first turn, and around 50-100ms to the others */
 const DEFAULT_FIRST_TURN_TIMEOUT_MS = 1000;
 const DEFAULT_TURN_TIMEOUT_MS = 100;
 
-export interface BotEngineOptions<State> {
-    referee: Referee<State>,
+export interface BotEngineOptions<State, Play = string[]> {
+    referee: Referee<State, Play>,
     players: BotPlayer[],
     seed?: number,
     hideEngineLogs?: boolean,
@@ -17,17 +18,21 @@ export interface BotEngineOptions<State> {
     turnTimeoutMs?: number,
 }
 
-export default class BotEngine<State> {
-    constructor(public options: BotEngineOptions<State>) {}
+export default class BotEngine<State, Play = string[]> {
+    constructor(public options: BotEngineOptions<State, Play>) {}
 
     async run(): Promise<GameResult> {
         const { referee, players } = this.options;
         const alive: boolean[] = players.map(() => true);
         const eliminated: GameResult["eliminated"] = [];
-        const eliminate = (player: number, reason: string) => {
+        const eliminate = (player: number, kind: EliminationKind, reason: string) => {
             alive[player] = false;
-            eliminated.push({ player, reason });
-            console.warn(`player ${player} eliminated: ${reason}`);
+            eliminated.push({ player, kind, reason });
+            console.warn(`player ${player} eliminated (${kind}): ${reason}`);
+        };
+        const eliminateOnFailure = (player: number, error: unknown) => {
+            const kind = error instanceof PlayerFailure ? error.kind : "crash";
+            eliminate(player, kind, errorMessage(error));
         };
         const aliveCount = () => alive.filter(Boolean).length;
         /** with several players, the game is over as soon as at most one is left */
@@ -46,7 +51,7 @@ export default class BotEngine<State> {
             const starts = await Promise.allSettled(players.map((player) => player.start()));
             starts.forEach((result, index) => {
                 if (result.status === "rejected") {
-                    eliminate(index, errorMessage(result.reason));
+                    eliminateOnFailure(index, result.reason);
                 }
             });
             winner = survivorsWinner();
@@ -78,29 +83,29 @@ export default class BotEngine<State> {
                 });
                 const settled = await Promise.allSettled(answers);
 
-                const outputs: PlayerOutputs = {};
+                // like on CodinGame, whoever breaks the rules loses: check every answer before applying any
+                const plays: Plays<Play> = {};
                 settled.forEach((result, index) => {
-                    if (result.status === "fulfilled") {
-                        outputs[active[index]] = result.value;
-                    } else {
-                        eliminate(active[index], errorMessage(result.reason));
+                    const player = active[index];
+                    if (result.status === "rejected") {
+                        eliminateOnFailure(player, result.reason);
+                        return;
+                    }
+                    try {
+                        const play = referee.parsePlay(state, player, result.value);
+                        referee.validatePlay(state, player, play);
+                        plays[player] = play;
+                    } catch (error) {
+                        if (!(error instanceof InvalidMove)) {
+                            throw error; // bug in the referee, not a rule violation
+                        }
+                        eliminate(player, "invalid", error.reason);
                     }
                 });
 
-                // an invalid move only removes its author: the others are replayed without it
-                while (Object.keys(outputs).length) {
-                    try {
-                        state = referee.update(state, outputs);
-                        this.display(state);
-                        break;
-                    } catch (error) {
-                        if (error instanceof InvalidMove && outputs[error.player]) {
-                            eliminate(error.player, error.message);
-                            delete outputs[error.player];
-                        } else {
-                            throw error;
-                        }
-                    }
+                if (Object.keys(plays).length) {
+                    state = referee.update(state, plays);
+                    this.display(state);
                 }
 
                 turn++;
