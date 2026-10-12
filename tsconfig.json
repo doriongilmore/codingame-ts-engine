@@ -1,5 +1,5 @@
 {
-      "exclude": ["dist/*", "bin/*", "template/*"],
+      "exclude": ["dist/*", "bin/*", "template/*", "test/*"],
       "compilerOptions": {
             "module": "node18",
             "target": "es2020", // set to the *lowest* target you support

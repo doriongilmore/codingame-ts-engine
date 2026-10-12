@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a node module to easily work/play with typescript on different CodinGame projects (classic puzzles or bot battles)
+This is a node module to easily work/play with typescript on different CodinGame projects: classic puzzles (input - compute - output) and bot battles (turns, opponents).
 
 ## Goal / Idea
 
@@ -54,6 +54,24 @@ If that's the case, you're ready to work on your puzzle! Start by looking into
 - `src/index.ts` (mechanism to run one or several puzzles)
 - `exercises` you should update files for your current puzzle
 
+## Bot battles
+
+Copy `template/bot` instead of a puzzle template. It contains:
+- `game/Referee.ts`: the rules of the game (the sample is a Tic Tac Toe, replace it with your game)
+- `src/playerScript.ts`: your bot, written like on CodinGame (same build tool as puzzles)
+- `src/opponentScript.ts`: an opponent (random moves, or an older version of your bot)
+- `src/index.ts` plays one game, `src/evaluate.ts` plays several games and prints your win rate
+
+Add these scripts to your package.json:
+```json
+"dev": "tsx src/index.ts",
+"evaluate": "tsx src/evaluate.ts",
+"build": "npx tsx node_modules/.bin/buildForCodingame.ts"
+```
+
+Each bot runs in its own node process: it reads with the global synchronous `readline()` and answers with `console.log`, exactly as on CodinGame. What it writes with `console.error` is displayed with its player name.
+A bot is eliminated (and the other player wins) when it answers too slowly (`turnTimeoutMs`, `firstTurnTimeoutMs`), crashes, or when your referee throws an `InvalidMove`.
+
 ## Example
 
 Check the following for a complete implementation:
@@ -71,4 +89,9 @@ Check the following for a complete implementation:
 - node module ✅
     - export utilities from 1 & 2 ✅
     - create specific architecture during installation (see /template folder) ✅
-- framework for more advanced games ⏳
+- framework for bot battles ✅
+    - referee interface (sequential or simultaneous games) ✅
+    - every bot runs in its own process with a CodinGame-like global `readline()` ✅
+    - invalid move / timeout / crash elimination ✅
+    - `evaluate` N games between two scripts ✅
+- framework for more advanced games (replays, viewer) ⏳

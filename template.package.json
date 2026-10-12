@@ -6,7 +6,8 @@
   "author": "doriongilmore",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "evaluate": "tsx src/evaluate.ts"
   },
   "dependencies": {
     "@doriongilmore/codingame-ts-engine": "file:../.."
