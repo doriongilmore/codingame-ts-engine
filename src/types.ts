@@ -67,6 +67,17 @@ export interface Referee<State, Play = string[]> {
     update(state: State, plays: Plays<Play>): State;
     /** null while the game goes on */
     winner(state: State): Winner;
+    /**
+     * True when the rules took the player out of the game (dead, bankrupt...). Optional: players
+     * eliminated by the engine (timeout, crash, rule violation) are tracked by the engine itself.
+     * Without it, the engine cannot tell that a player is out, nor when.
+     */
+    isOut?(state: State, player: number): boolean;
+    /**
+     * Optional scores (higher is better, indexed by player) used to tell apart the players still
+     * in the game at the end, for example when the turn limit is reached.
+     */
+    scores?(state: State): number[];
     /** optional readable log of the state */
     display?(state: State): void;
 }
@@ -77,4 +88,10 @@ export interface GameResult {
     turns: number;
     /** players removed from the game, with the reason */
     eliminated: { player: number; kind: EliminationKind; reason: string }[];
+    /**
+     * Rank of each player, indexed by player: 1 is the best, ties share a rank (1, 2, 2, 4).
+     * Whoever stays in the game the longest ranks first; players leaving at the same turn tie,
+     * whatever the cause (rule violation, crash or death).
+     */
+    ranks: number[];
 }

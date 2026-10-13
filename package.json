@@ -25,7 +25,9 @@
     "./puzzle/*": "./src/Puzzle/*.ts",
     "./puzzle/*.js": "./src/Puzzle/*.ts",
     "./bot/*": "./src/Bot/*.ts",
-    "./bot/*.js": "./src/Bot/*.ts"
+    "./bot/*.js": "./src/Bot/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./lib/*.js": "./src/lib/*.ts"
   },
   "author": "doriongilmore<doriongilmore@outlook.com>",
   "license": "MIT",

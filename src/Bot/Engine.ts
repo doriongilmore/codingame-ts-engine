@@ -1,6 +1,6 @@
 import { InvalidMove } from "./InvalidMove.js";
-import type { BotPlayer } from "./Player.js";
-import { PlayerFailure } from "./Player.js";
+import { PlayerFailure, type BotPlayer } from "./Player.js";
+import { computeRanks } from "./ranking.js";
 import type { EliminationKind, GameResult, Plays, Referee, Winner } from "../types.js";
 
 const DASHES = "------";
@@ -23,10 +23,16 @@ export default class BotEngine<State, Play = string[]> {
 
     async run(): Promise<GameResult> {
         const { referee, players } = this.options;
+        /** false once the engine eliminated the player (timeout, crash, rule violation) */
         const alive: boolean[] = players.map(() => true);
+        /** turn at which each player left the game (-1: before the first turn), null while in game */
+        const outAt: (number | null)[] = players.map(() => null);
+        let clock = -1;
         const eliminated: GameResult["eliminated"] = [];
+
         const eliminate = (player: number, kind: EliminationKind, reason: string) => {
             alive[player] = false;
+            outAt[player] = outAt[player] ?? clock;
             eliminated.push({ player, kind, reason });
             console.warn(`player ${player} eliminated (${kind}): ${reason}`);
         };
@@ -34,16 +40,24 @@ export default class BotEngine<State, Play = string[]> {
             const kind = error instanceof PlayerFailure ? error.kind : "crash";
             eliminate(player, kind, errorMessage(error));
         };
-        const aliveCount = () => alive.filter(Boolean).length;
-        /** with several players, the game is over as soon as at most one is left */
+        const inGameCount = () => outAt.filter((out) => out === null).length;
+        /** with several players, the game is over as soon as at most one is still in the game */
         const survivorsWinner = (): Winner => {
-            if (players.length < 2 || aliveCount() > 1) {
+            if (players.length < 2 || inGameCount() > 1) {
                 return null;
             }
-            return aliveCount() === 1 ? alive.indexOf(true) : "draw";
+            return inGameCount() === 1 ? outAt.indexOf(null) : "draw";
         };
 
         let state = referee.init(players.length, this.options.seed ?? 0);
+        /** players taken out of the game by the rules (the referee tells, the engine notes the turn) */
+        const markOut = () => {
+            players.forEach((_, player) => {
+                if (outAt[player] === null && referee.isOut?.(state, player)) {
+                    outAt[player] = clock;
+                }
+            });
+        };
         let turn = 0;
         let winner: Winner = null;
 
@@ -54,6 +68,7 @@ export default class BotEngine<State, Play = string[]> {
                     eliminateOnFailure(index, result.reason);
                 }
             });
+            markOut();
             winner = survivorsWinner();
 
             this.logStep("Game started");
@@ -66,9 +81,10 @@ export default class BotEngine<State, Play = string[]> {
 
             winner = winner ?? referee.winner(state);
             while (winner === null && turn < referee.maxTurns) {
+                clock = turn;
                 const active = referee
                     .activePlayers(state, [...alive])
-                    .filter((player) => alive[player]);
+                    .filter((player) => outAt[player] === null);
                 if (!active.length) {
                     break;
                 }
@@ -107,6 +123,7 @@ export default class BotEngine<State, Play = string[]> {
                     state = referee.update(state, plays);
                     this.display(state);
                 }
+                markOut();
 
                 turn++;
                 winner = survivorsWinner() ?? referee.winner(state);
@@ -120,8 +137,15 @@ export default class BotEngine<State, Play = string[]> {
             await Promise.allSettled(players.map((player) => player.stop()));
         }
 
+        const scores = referee.scores?.(state);
+        const ranks = computeRanks(outAt, typeof winner === "number" ? winner : null, scores);
+        if (players.length > 1) {
+            // the ranking is the reference: one first player is the winner, a tie for first is a draw
+            winner = ranks.filter((rank) => rank === 1).length === 1 ? ranks.indexOf(1) : "draw";
+        }
+
         this.logStep(`Game finished. Winner : ${winner}`);
-        return { winner, turns: turn, eliminated };
+        return { winner, turns: turn, eliminated, ranks };
     }
 
     private display(state: State): void {

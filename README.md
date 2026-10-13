@@ -79,6 +79,23 @@ Like on CodinGame, a bot which does not respect the rules loses (the other playe
 The reason is printed, available in the result (`eliminated: [{ player, kind, reason }]`) and, with `evaluate`, in `errors`.
 Your referee only has to describe the rules: `update` is called with valid plays only.
 
+### Ranking several bots
+
+Every game gives `ranks` (indexed by player, 1 is the best, ties share a rank: 1, 2, 2, 4): whoever stays in the game the longest ranks first, players leaving at the same turn tie, whatever the cause (rule violation, crash or death).
+- If your game has players who die by the rules, implement the optional `isOut(state, player)` in your referee: the engine notes the turn at which each player left.
+- If your game is decided on points (turn limit...), implement the optional `scores(state)` (higher is better) to tell apart the players still in the game.
+
+`compete` plays several games with 2 or more scripts at the same time (your referee must support that many players), rotating their seats, and compares them:
+
+```ts
+import { compete } from "@doriongilmore/codingame-ts-engine/bot/Runner";
+
+const { scripts } = await compete({ referee, players: [botA, botB, botC, botD], games: 24 });
+// scripts[i]: { script, wins, avgRank, rankCounts: [1st, 2nd, 3rd, 4th], points, errors }
+```
+
+Use a number of games which is a multiple of the player count so every script plays every seat the same number of times. `evaluate` is the 2 scripts version with win, loss and draw counts.
+
 ## Example
 
 Check the following for a complete implementation:

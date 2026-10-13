@@ -70,4 +70,39 @@ export const scoreReferee: Referee<ScoreState, number> = {
         const bests = state.scores.filter((score) => score === best).length;
         return bests > 1 ? "draw" : state.scores.indexOf(best);
     },
+    scores: (state) => state.scores,
+};
+
+/**
+ * Simultaneous, N players: answering 0 (or not answering) means death. A dead player is out of
+ * the game. Last one in the game wins, nobody wins before turn 5.
+ */
+export interface SurvivalState { turn: number, dead: boolean[] }
+
+export const survivalReferee: Referee<SurvivalState, number> = {
+    maxTurns: 5,
+    init: (playerCount) => ({ turn: 0, dead: Array(playerCount).fill(false) }),
+    getInitInputs: () => [],
+    getTurnInputs: (state) => [String(state.turn)],
+    activePlayers: (state, alive) => alive.map((_, i) => i).filter((i) => alive[i] && !state.dead[i]),
+    expectedOutputLines: () => 1,
+    parsePlay: (_state, _player, lines) => parseInteger(lines),
+    validatePlay() {},
+    update(state, plays) {
+        const dead = state.dead.map((isDead, player) => isDead || !plays[player]);
+        return { turn: state.turn + 1, dead };
+    },
+    winner(state) {
+        const inGame = state.dead.filter((isDead) => !isDead).length;
+        if (inGame > 1) return null;
+        return inGame === 1 ? state.dead.indexOf(false) : "draw";
+    },
+    isOut: (state, player) => state.dead[player],
+};
+
+/** Turn limit after 2 turns, no winner by the rules: the scores tell who is first */
+export const limitReferee: Referee<ScoreState, number> = {
+    ...scoreReferee,
+    maxTurns: 2,
+    winner: () => null,
 };

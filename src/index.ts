@@ -24,6 +24,14 @@ export type { Referee, GameResult, Plays, Winner, EliminationKind } from "./type
 export { default as BotEngine } from "./Bot/Engine.js";
 export type { BotEngineOptions } from "./Bot/Engine.js";
 export { InvalidMove } from "./Bot/InvalidMove.js";
-export { run as runBot, evaluate as evaluateBot } from "./Bot/Runner.js";
-export type { RunOptions as RunBotOptions, EvaluateOptions, EvaluationResult } from "./Bot/Runner.js";
+export { run as runBot, evaluate as evaluateBot, compete as competeBots } from "./Bot/Runner.js";
+export type {
+    RunOptions as RunBotOptions,
+    EvaluateOptions,
+    EvaluationResult,
+    CompeteOptions,
+    CompeteResult,
+    ScriptStats,
+    ScriptError,
+} from "./Bot/Runner.js";
 export { createRandom } from "./lib/createRandom.js";
