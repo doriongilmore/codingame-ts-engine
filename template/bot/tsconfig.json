@@ -3,5 +3,6 @@
             "noEmit": true,
             "module": "nodenext",
             "moduleResolution": "nodenext"
-      }
+      },
+      "exclude": ["codingame", "node_modules"]
 }
