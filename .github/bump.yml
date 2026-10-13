@@ -41,6 +41,7 @@ categories:
     commits:
       - 'feature:'
       - 'feat:'
+      - 'change:'
     changes-prefix: ':gift: '
   - title: 'Bug Fixes'
     labels:
