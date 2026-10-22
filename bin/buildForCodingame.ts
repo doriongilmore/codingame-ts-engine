@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync,  } from 'fs';
-import { resolve, sep } from 'path';
+import { relative, resolve, sep } from 'path';
 import argv from "process.argv";
 
 interface BuildScriptApi {
@@ -92,7 +92,9 @@ function parseFileRecursively(config: BuildScriptApi, filepath: string): string 
     }
   }
 
-  completeContent.push(`// file:${completeFilepath}`);
+  // relative to the entry script folder: an absolute path would leak the local environment
+  const displayedPath = relative(resolve(config.script, ".."), completeFilepath).split(sep).join("/");
+  completeContent.push(`// file:${displayedPath}`);
   completeContent.push(scriptLines.join("\n"));
 
   return completeContent.join("\n");
