@@ -1,4 +1,4 @@
-// file:/home/dorion/workspace/codingameEngine/template/puzzle/src/playerScript.ts
+// file:playerScript.ts
 
 type ReadlineFunction = () => string
 

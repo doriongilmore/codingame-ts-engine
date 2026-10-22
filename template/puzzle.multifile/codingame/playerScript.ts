@@ -1,7 +1,7 @@
-// file:/home/dorion/workspace/codingameEngine/template/puzzle.multifile/src/types.ts
+// file:types.ts
 type ReadlineFunction = () => string
 
-// file:/home/dorion/workspace/codingameEngine/template/puzzle.multifile/src/getInputs.ts
+// file:getInputs.ts
 function getInputs(readline: ReadlineFunction) {
     var rawInputs: string[] = readline().split(' ');
     const w: number = parseInt(rawInputs[0]);
@@ -16,7 +16,7 @@ function getInputs(readline: ReadlineFunction) {
     return inputs;
 }
 
-// file:/home/dorion/workspace/codingameEngine/template/puzzle.multifile/src/playerScript.ts
+// file:playerScript.ts
 
 function main(readline: ReadlineFunction): string[] {
     /**

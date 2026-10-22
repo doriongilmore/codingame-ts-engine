@@ -1,4 +1,4 @@
-// file:template/bot/src/playerScript.ts
+// file:playerScript.ts
 
 type ReadlineFunction = () => string
 
